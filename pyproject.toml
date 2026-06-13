@@ -1,0 +1,9 @@
+[project]
+name = "pygame-dodge-game"
+version = "0.1"
+requires-python = "==3.13"
+
+dependencies = [
+    "pygame==2.6.1",
+    "pyinstaller==6.20.0"
+]
