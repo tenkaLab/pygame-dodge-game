@@ -1,7 +1,10 @@
-from game.package.base_object.base_worldobject import BaseWorldobject
+import pygame
+from game.package.base_object.worldobject import Worldobject
 
-class Camera(BaseWorldobject):
+class Camera(Worldobject):
     
     def __init__(self):
         super().__init__()
         self.tags.append("camera")
+
+        self.offset = pygame.Vector2()

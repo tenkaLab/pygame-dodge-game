@@ -1,6 +1,6 @@
 import pygame
 
-from game.package.base_object.base_component import BaseComponent
+from game.package.base_object.component import Component
 
 class AnimationData:
 
@@ -34,7 +34,7 @@ class AnimationData:
         ]
 
 
-class AnimationPlayer():
+class AnimationPlayer:
 
     def __init__(self):
         self.animation: AnimationData | None = None
@@ -77,7 +77,7 @@ class AnimationPlayer():
         self.elapsed = 0.0
 
 
-class Animator(BaseComponent):
+class Animator(Component):
 
     def __init__(self):
         super().__init__()
@@ -86,8 +86,7 @@ class Animator(BaseComponent):
 
     def start(self):
         self.transform = self.parent.get_component("Transform")
-        self.renderer = self.parent.get_component("Renderer")
-        self.renderer.register_render_as(id(self))
+        self.sprite_renderer = self.parent.get_component("SpriteRenderer")
     
         if len(self.animations) >= 1:
             self.animation_player.animation = self.animations[0]
@@ -97,13 +96,10 @@ class Animator(BaseComponent):
     def update(self):
         self.animation_player.update(self.engine.delta_time)
 
-        frames = self.animation_player.animation.get_scaled_frames(tuple(self.transform.scale.xy))
-        frame_index = self.animation_player.frame_index
+        frames: list[pygame.Surface] = self.animation_player.animation.get_scaled_frames(tuple(self.transform.scale.xy))
+        frame_index: int = self.animation_player.frame_index
 
-        obj = self.renderer.render_objects[id(self)]
-        obj.surface = frames[frame_index]
-        obj.position = tuple(self.transform.position.xy)
-        obj.layer = self.transform.layer
+        self.sprite_renderer.set_surface(surface= frames[frame_index])
 
         return super().update()
 

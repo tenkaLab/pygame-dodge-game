@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import pygame
 
-from game.package.base_object.base_component import BaseComponent
+from game.package.base_object.component import Component
 
 @dataclass
 class Hitbox:
@@ -10,33 +10,26 @@ class Hitbox:
     color: tuple[int,int,int]
         
 
-class Collider(BaseComponent):
+class Collider(Component):
     def __init__(self):
         super().__init__()
         self.hitboxes = []
         self.last_pos = (0,0)
-        self.debug_surface = pygame.Surface((1,1), pygame.SRCALPHA)
 
         self.is_collision_enabled = True
-        self.is_render_debug = True
 
     def start(self):
         self.worldobjects = self.engine.current_scene.world
 
         self.transform = self.parent.get_component("Transform")
-        self.renderer = self.parent.get_component("Renderer")
-        self.renderer.register_render_as(id(self))
 
         self.last_pos = self.transform.position
 
         return super().start()
 
     def update(self):
-        if self.is_render_debug:
-            self._update_debug_surface()
         if self.is_collision_enabled:
             self._resolve_collision()
-        
 
         return super().update()
 

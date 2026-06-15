@@ -3,7 +3,7 @@ import pygame
 from game.package.gameobject.worldobject.camera import Camera
 
 
-class BaseScene:
+class Scene:
     
     def __init__(self):
         self.active = True
@@ -66,16 +66,16 @@ class BaseScene:
         if not get_state(camera_transform):
             return
         
-        render_objects = create_render_objects(self.world)
-        render_objects.sort(key=lambda x: x.layer)
+        render_data_list = create_render_data_list(self.world)
+        render_data_list.sort(key=lambda x: x.layer)
 
-        for render in render_objects:
+        for render in render_data_list:
 
             draw_surface = render.surface
 
             draw_position = (
-                (render.position[0] - camera_transform.position.x) + (screen_size[0] // 2),
-                (render.position[1] - camera_transform.position.y) + (screen_size[1] // 2)
+                (render.position[0] - camera_transform.position.x) + camera.offset.x,
+                (render.position[1] - camera_transform.position.y) + camera.offset.y
             )
 
             self.engine.screen.blit(
@@ -87,10 +87,10 @@ class BaseScene:
 
         screen_size = self.engine.screen.get_size()
 
-        render_objects = create_render_objects(self.canvas)
-        render_objects.sort(key=lambda x: x.layer)
+        render_data_list = create_render_data_list(self.canvas)
+        render_data_list.sort(key=lambda x: x.layer)
 
-        for render in render_objects:
+        for render in render_data_list:
             draw_surface: pygame.Surface = render.surface
 
             position_ratio = render.position
@@ -103,13 +103,13 @@ class BaseScene:
 
             self.engine.screen.blit(draw_surface, draw_position)
 
-def create_render_objects(gameobjects):
+def create_render_data_list(gameobjects):
     return  [
-        render_object
+        comp.render_data
         for go in gameobjects
         if get_state(go)
-        if get_state(go.get_component("Renderer"))
-        for render_object in go.get_component("Renderer").render_objects.values()
+        for comp in go.components.values()
+        if hasattr(comp, "render_data")
     ]
 
 def get_state(object):

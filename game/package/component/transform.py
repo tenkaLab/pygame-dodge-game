@@ -1,7 +1,7 @@
 from pygame import Vector2
-from game.package.base_object.base_component import BaseComponent
+from game.package.base_object.component import Component
 
-class Transform(BaseComponent):
+class Transform(Component):
     def __init__(self):
         super().__init__()
         self._position: Vector2 = Vector2(0,0)

@@ -1,4 +1,5 @@
-class BaseComponent:
+class Component:
+    
     def __init__(self):
         self.active: bool = True
         self._tags: list[str] = []
@@ -19,3 +20,6 @@ class BaseComponent:
 
     def add_tag(self, tag_name: str):
         self._tags.append(tag_name)
+
+    def get_render_data():
+        return None
