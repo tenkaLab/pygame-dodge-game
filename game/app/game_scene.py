@@ -1,16 +1,17 @@
-from game.package.base_object import BaseScene
+from game.package.base_object import Scene
 from game.package.gameobject import Square
 from .player import Player
 from .ui import Image
 
 
-class GameScene(BaseScene):
+class GameScene(Scene):
 
     def start(self):
-        player = Player((-100,0), (2,2),4)
+
+        player = Player((0,0), (2,2),4)
         self.add_worldobject(player)
 
-        square = Square((0,0), (10,10), 1, (0,0,255))
+        square = Square((100,0), (10,10), 1, (0,0,255))
         self.add_worldobject(square)
 
         image = Image((0.15,0.9), (100,50), (1,1), 1)

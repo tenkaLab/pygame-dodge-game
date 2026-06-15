@@ -1,11 +1,10 @@
 import pygame
-import json
 
-from game import paths
-from game.package.base_object import BaseWorldobject, BaseComponent
-from game.package.component import Renderer, Animator, Collider
+from game.package.base_object import Worldobject, Component
+from game.package.component import Transform, SpriteRenderer, Collider
+from game.app.component.state import State
 
-class Player(BaseWorldobject):
+class Player(Worldobject):
 
     def __init__(self, position:tuple, scale:tuple, layer:int,):
         super().__init__()
@@ -15,54 +14,32 @@ class Player(BaseWorldobject):
         transform.scale = scale
         transform.layer = layer
 
-        self.add_component(Renderer())
-
-        animator = Animator()
-
-        with open(paths.APP_ASSET_DIR / "player/animations_data.json", "r") as f:
-            data = json.load(f)
-
-        for name, info in data.items():
-            frames: list[pygame.Surface] = []
-            spritesheet_surface = pygame.image.load(paths.APP_ASSET_DIR / info["spritesheet_image_path"])
-            for frame_info in info["frames"]:
-                x, y, w, h = frame_info
-                crop_area = pygame.Rect(x*w, y*h, w, h)
-                cropped_surface = spritesheet_surface.subsurface(crop_area)
-                frames.append(cropped_surface)
-
-            animator.add_animation(name, frames, info["fps"],  info["is_loop"])
-
-        self.add_component(animator)
+        sprite = SpriteRenderer()
+        surface = pygame.Surface((10,10))
+        surface.fill((255,0,0))
+        sprite.set_surface(surface)
+        self.add_component(sprite)
 
         collider = Collider()
         collider.is_collision_enabled = False
-        collider.add_hitbox((-0,-0), (14,14), (255,0,0,200))
+        collider.add_hitbox((-0,-0), (10,10), (255,0,0,200))
         self.add_component(collider)
 
         state = State() 
-        state.speed = 5
+        state.speed = 10
         self.add_component(state)
         
         self.add_component(Controller())
         
-
-class State(BaseComponent):
-    def __init__(self):
-        super().__init__()
-        
-class Controller(BaseComponent):
+class Controller(Component):
 
     def start(self):
-        self.transform = self.parent.get_component("Transform")
-        self.renderer = self.parent.get_component("Renderer")
-        self.animator: Animator = self.parent.get_component("Animator")
+        self.transform: Transform = self.parent.get_component("Transform")
+        self.sprite_renderer: SpriteRenderer = self.parent.get_component("SpriteRenderer")
         self.collider: Collider = self.parent.get_component("Collider")
         self.state: State = self.parent.get_component("State")
 
         self.camera = self.engine.current_scene.camera
-
-        self.stack = [0,0,0,0]
 
         return super().start()
     
@@ -70,48 +47,45 @@ class Controller(BaseComponent):
         keys = self.engine.input_status.keys
         dt = self.engine.delta_time
 
-        camera_transform = self.camera.get_component("Transform")
-
-        scale =  self.transform.scale
-
-        surface_size = self.renderer.render_objects[id(self.animator)].surface.get_size()
+        w, h = self.sprite_renderer.surface.get_size()
+        sx, sy = self.transform.scale
         scaled_size = (
-            surface_size[0] * scale.x, 
-            surface_size[1] * scale.y
+            w * sx,
+            h * sy
         )
 
-        state = self.state
-
         if keys.get("w", False):
-            self.transform.position.y -= (scaled_size[1] / 2) * state.speed * dt
-            self.animator.change_animation("up_walk", True)
+            self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
+
             if self.collider.is_colliding():
-                self.transform.position.y += (scaled_size[1] / 2) * state.speed * dt
+                self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
+
+            if self.transform.position.y < 0:
+                self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
 
         if keys.get("s", False):
-            self.transform.position.y += (scaled_size[1] / 2) * state.speed * dt
-            self.animator.change_animation("down_walk", True)
+            self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
+
             if self.collider.is_colliding():
-                self.transform.position.y -= (scaled_size[1] / 2) * state.speed * dt
+                self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
+
+            if self.transform.position.y >= self.engine.screen.get_height() - scaled_size[1]:
+                self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
 
         if keys.get("a", False):
-            self.transform.position.x -= (scaled_size[0] / 2) * state.speed * dt
-            self.animator.change_animation("left_walk", True)
+            self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
             if self.collider.is_colliding():
-                self.transform.position.x += (scaled_size[0] / 2) * state.speed * dt
+                self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
+
+            if self.transform.position.x < 0:
+                self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
         
         if keys.get("d", False):
-            self.transform.position.x += (scaled_size[0] / 2) * state.speed * dt
-            self.animator.change_animation("right_walk", True)
+            self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
             if self.collider.is_colliding():
-                self.transform.position.x -= (scaled_size[0] / 2) * state.speed * dt
+                self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
 
-        if keys.get("1", False):
-            scale.x += 1
-            scale.y += 1
+            if self.transform.position.x >= self.engine.screen.get_width() - scaled_size[0]:
+                self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
 
-        self.transform.scale = scale 
-
-        camera_transform.position = self.transform.position
-        
         return super().update()
