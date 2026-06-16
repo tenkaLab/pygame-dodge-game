@@ -27,7 +27,7 @@ jobs:
             > progress-additions.md || true
 
           if [ ! -s progress-additions.md ]; then
-            echo "docs/progress.md was changed, but no added lines were detected." > progress-additions.md
+            echo "docs/progress.md の追加行は検出されませんでした。workflowのみ更新された可能性があります。" > progress-additions.md
           fi
 
       - name: Notify Discord
