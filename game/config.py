@@ -2,7 +2,7 @@ from game import paths
 from game.app.game_scene import GameScene
 
 game = {
-    "name" : "MyGame",
+    "name" : "pygame-dodge-game",
     "version" : "0.1",
     "icon_image_path" : paths.DEFAULT_ICON_IMAGE,
     
