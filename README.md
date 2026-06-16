@@ -3,11 +3,24 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
 
 
 
-## How to Play
+1. Python 3.13.9 をインストール
 
-1. プロジェクトのフォルダを開く
-2. ターミナル（コマンドプロンプト）を開く
-3. 以下のコマンドを実行する
+2. このリポジトリをクローン
+
+```bash
+git clone https://github.com/dev-haku/py-gamekit.git
+cd py-gamekit
+```
+
+3. 依存関係ライブラリのインストール
+
+```bash
+python -3.13 -m pip install -r requirements.txt
+```
+
+4. プロジェクトのフォルダを開く
+5. ターミナル（コマンドプロンプト）を開く
+6. 起動ファイルの実行
 
 ```bash
 python run.py
