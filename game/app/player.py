@@ -57,35 +57,28 @@ class Controller(Component):
         if keys.get("w", False):
             self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
 
-            if self.collider.is_colliding():
-                self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
-
             if self.transform.position.y < 0:
                 self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
 
         if keys.get("s", False):
             self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
 
-            if self.collider.is_colliding():
-                self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
-
             if self.transform.position.y >= self.engine.screen.get_height() - scaled_size[1]:
                 self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
 
         if keys.get("a", False):
             self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
-            if self.collider.is_colliding():
-                self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
 
             if self.transform.position.x < 0:
                 self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
         
         if keys.get("d", False):
             self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
-            if self.collider.is_colliding():
-                self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
 
             if self.transform.position.x >= self.engine.screen.get_width() - scaled_size[0]:
                 self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
+
+        if self.collider.is_colliding():
+            self.engine.current_scene.gameover = True
 
         return super().update()
