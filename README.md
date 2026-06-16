@@ -15,4 +15,4 @@ python run.py
 
 ## Gameplay
 
-<img src="docs/images/gameplay.gif" width="400">
+<img src="docs/images/screenshot/ver0.1.png" width="300">
