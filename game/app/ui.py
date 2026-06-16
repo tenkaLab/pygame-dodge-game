@@ -58,7 +58,6 @@ class Text(Uiobject):
     def set_text(self, text: str):
         self.text = str(text)
         self.flag = True
-        print(self.text)
 
     def set_color(self, color: tuple[int,int,int]):
         self.color = tuple(color)
