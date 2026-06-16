@@ -1,1 +1,82 @@
+name: Progress Diff Notify
 
+on:
+  push:
+    paths:
+      - "docs/progress.md"
+      - ".github/workflows/progress-diff-notify.yml"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get progress diff
+        shell: bash
+        run: |
+          git diff --unified=0 HEAD~1 HEAD -- docs/progress.md > progress.diff || true
+
+          if [ ! -s progress.diff ]; then
+            echo "docs/progress.md was changed, but no readable diff was generated." > progress.diff
+          fi
+
+          head -c 1400 progress.diff > progress-short.diff
+
+      - name: Notify Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
+
+          with open("progress-short.diff", "r", encoding="utf-8", errors="replace") as f:
+              diff_text = f.read()
+
+          repo = os.environ.get("REPO", "")
+          actor = os.environ.get("ACTOR", "")
+          commit_message = os.environ.get("COMMIT_MESSAGE", "")
+          commit_url = os.environ.get("COMMIT_URL", "")
+
+          content = (
+              "進捗ログが更新されました。\n\n"
+              f"Repository: {repo}\n"
+              f"Author: {actor}\n"
+              f"Commit: {commit_message}\n"
+              f"{commit_url}\n\n"
+              "```diff\n"
+              f"{diff_text}\n"
+              "```"
+          )
+
+          if len(content) > 1900:
+              content = content[:1850] + "\n...\n```"
+
+          payload = json.dumps({"content": content}).encode("utf-8")
+
+          request = urllib.request.Request(
+              webhook_url,
+              data=payload,
+              headers={
+                  "Content-Type": "application/json",
+                  "User-Agent": "GitHub-Actions-Progress-Notifier",
+              },
+              method="POST",
+          )
+
+          with urllib.request.urlopen(request) as response:
+              print(response.status)
+          PY
