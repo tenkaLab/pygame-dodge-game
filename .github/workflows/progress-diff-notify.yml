@@ -1,11 +1,10 @@
-````yml
 name: Progress Additions Notify
 
 on:
   push:
     paths:
       - "docs/progress.md"
-      - ".github/workflows/readme-diff-notify.yml"
+      - ".github/workflows/progress-diff-notify.yml"
 
 jobs:
   notify:
@@ -31,8 +30,6 @@ jobs:
             echo "docs/progress.md was changed, but no added lines were detected." > progress-additions.md
           fi
 
-          head -c 1400 progress-additions.md > progress-short.md
-
       - name: Notify Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -47,44 +44,71 @@ jobs:
           import os
           import urllib.request
 
-          webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
+          webhook_url = os.environ.get("DISCORD_WEBHOOK_URL", "")
 
-          with open("progress-short.md", "r", encoding="utf-8", errors="replace") as f:
-              progress_text = f.read()
+          if not webhook_url:
+              raise RuntimeError("DISCORD_WEBHOOK_URL is not set.")
+
+          with open("progress-additions.md", "r", encoding="utf-8", errors="replace") as f:
+              progress_text = f.read().strip()
 
           repo = os.environ.get("REPO", "")
           actor = os.environ.get("ACTOR", "")
           commit_message = os.environ.get("COMMIT_MESSAGE", "")
           commit_url = os.environ.get("COMMIT_URL", "")
 
-          content = (
+          def send_discord_message(content: str):
+              payload = json.dumps({"content": content}).encode("utf-8")
+
+              request = urllib.request.Request(
+                  webhook_url,
+                  data=payload,
+                  headers={
+                      "Content-Type": "application/json",
+                      "User-Agent": "GitHub-Actions-Progress-Notifier",
+                  },
+                  method="POST",
+              )
+
+              with urllib.request.urlopen(request) as response:
+                  print(response.status)
+
+          header = (
               "進捗ログが更新されました。\n\n"
               f"Repository: {repo}\n"
               f"Author: {actor}\n"
               f"Commit: {commit_message}\n"
-              f"{commit_url}\n\n"
-              "追加された内容:\n"
-              "```md\n"
-              f"{progress_text}\n"
-              "```"
+              f"{commit_url}"
           )
 
-          if len(content) > 1900:
-              content = content[:1850] + "\n...\n```"
+          if len(header) > 1900:
+              header = header[:1850] + "\n..."
 
-          payload = json.dumps({"content": content}).encode("utf-8")
+          send_discord_message(header)
 
-          request = urllib.request.Request(
-              webhook_url,
-              data=payload,
-              headers={
-                  "Content-Type": "application/json",
-                  "User-Agent": "GitHub-Actions-Progress-Notifier",
-              },
-              method="POST",
-          )
+          if not progress_text:
+              progress_text = "追加された内容はありません。"
 
-          with urllib.request.urlopen(request) as response:
-              print(response.status)
+          chunk_size = 1500
+          chunks = [
+              progress_text[i:i + chunk_size]
+              for i in range(0, len(progress_text), chunk_size)
+          ]
+
+          total = len(chunks)
+
+          for index, chunk in enumerate(chunks, start=1):
+              if total == 1:
+                  title = "追加された内容:"
+              else:
+                  title = f"追加された内容 Part {index}/{total}:"
+
+              message = (
+                  f"{title}\n"
+                  "```md\n"
+                  f"{chunk}\n"
+                  "```"
+              )
+
+              send_discord_message(message)
           PY
-````
