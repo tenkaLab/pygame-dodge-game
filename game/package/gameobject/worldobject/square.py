@@ -20,11 +20,11 @@ class Square(Worldobject):
         transfrom.layer = layer
 
         sprite = SpriteRenderer()
-        surface = pygame.Surface((8,8))
+        surface = pygame.Surface((1,1))
         surface.fill(color)
         sprite.set_surface(surface)
         self.add_component(sprite)
 
         collider = Collider()
-        collider.add_hitbox((0,0),(8,8), (255,0,0))
+        collider.add_hitbox((0,0),(1,1), (255,0,0))
         self.add_component(collider)

@@ -83,14 +83,15 @@ class Engine:
             scene.start()
             scene.is_started = True
 
-        scene.update()
+        if scene.active and scene.is_started:
+            scene.update()
 
     def _process_input_events(self):
 
         for event in pygame.event.get():
     
             if event.type == pygame.QUIT:
-                self.running = False
+                self.shutdown()
 
             elif event.type == pygame.KEYDOWN:
                 self.input_status.keys[pygame.key.name(event.key)] = True
@@ -109,13 +110,17 @@ class Engine:
                 self.input_status.mouse_buttons = [False] * 5
                                  
     def _draw(self):
-        if self.current_scene.is_started:
-            self.current_scene.draw()
+        scene = self.current_scene
+        if scene.active and scene.is_started:
+            scene.draw()
 
         scaled = pygame.transform.scale(self.screen, self.window.get_size())
         self.window.blit(scaled, (0,0))
 
         pygame.display.flip()
+
+    def shutdown(self):
+        self.running = False
 
 
 class InputStatus:

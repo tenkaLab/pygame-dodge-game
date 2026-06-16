@@ -14,8 +14,6 @@ class Scene:
 
         self.camera = self.add_worldobject(Camera())
 
-        self.engine = None
-
     def start(self):
         pass
 
@@ -23,9 +21,11 @@ class Scene:
         for gameobjects in (self.world, self.canvas):
             for go in gameobjects:
                 if go.is_started == False:
-                        go.engine = self.engine
-                        go.start()
-                        go.is_started = True
+                    go.engine = self.engine
+                    go.start()
+                    go.is_started = True
+                
+                go.update()
 
                 for comp in go.components.values():
                     if comp.is_started == False:
@@ -55,8 +55,6 @@ class Scene:
         return None
 
     def _draw_worldobjects(self):
-
-        screen_size = self.engine.screen.get_size()
 
         camera = self.camera
         if not get_state(camera):
@@ -90,6 +88,7 @@ class Scene:
         render_data_list = create_render_data_list(self.canvas)
         render_data_list.sort(key=lambda x: x.layer)
 
+
         for render in render_data_list:
             draw_surface: pygame.Surface = render.surface
 
@@ -97,8 +96,8 @@ class Scene:
             surface_size = draw_surface.get_size()
 
             draw_position = (
-                (screen_size[0] * position_ratio[0] - surface_size[0] // 2),
-                (screen_size[1] * position_ratio[1] - surface_size[1] // 2)
+                (screen_size[0] * position_ratio[0]) - (surface_size[0] // 2),
+                (screen_size[1] * position_ratio[1]) - (surface_size[1] // 2)
             )
 
             self.engine.screen.blit(draw_surface, draw_position)

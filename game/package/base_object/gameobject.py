@@ -15,6 +15,9 @@ class Gameobject:
 
     def start(self):
         pass
+
+    def update(self):
+        pass
     
     def add_tag(self, name):
         self.tags.append(name)
@@ -43,7 +46,11 @@ class Gameobject:
     
     def destroy(self):
         for gameobject in self.engine.current_scene.world:
+            if self == gameobject:
                 self.engine.current_scene.world.remove(gameobject)
+                return
 
-        for gameobject in self.engine.current_scene.canvas:
-                self.engine.current_scene.canvas.remove(gameobject)
+        for gameobject in self.engine.current_scene.world:
+            if self == gameobject:
+                self.engine.current_scene.world.remove(gameobject)
+                return
