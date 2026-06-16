@@ -13,6 +13,5 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
 python run.py
 ```
 
-## Gameplay
-
-<img src="docs/images/gameplay.gif" width="400">
+## Screenshot
+<img src="docs/images/screenshot/ver0.1.png" width="300">
