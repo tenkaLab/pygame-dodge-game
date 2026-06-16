@@ -1,10 +1,11 @@
-name: Progress Diff Notify
+````yml
+name: Progress Additions Notify
 
 on:
   push:
     paths:
       - "docs/progress.md"
-      - ".github/workflows/progress-diff-notify.yml"
+      - ".github/workflows/readme-diff-notify.yml"
 
 jobs:
   notify:
@@ -16,16 +17,21 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Get progress diff
+      - name: Get progress additions
         shell: bash
         run: |
           git diff --unified=0 HEAD~1 HEAD -- docs/progress.md > progress.diff || true
 
-          if [ ! -s progress.diff ]; then
-            echo "docs/progress.md was changed, but no readable diff was generated." > progress.diff
+          grep '^+' progress.diff \
+            | grep -v '^+++' \
+            | sed 's/^+//' \
+            > progress-additions.md || true
+
+          if [ ! -s progress-additions.md ]; then
+            echo "docs/progress.md was changed, but no added lines were detected." > progress-additions.md
           fi
 
-          head -c 1400 progress.diff > progress-short.diff
+          head -c 1400 progress-additions.md > progress-short.md
 
       - name: Notify Discord
         env:
@@ -43,8 +49,8 @@ jobs:
 
           webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
 
-          with open("progress-short.diff", "r", encoding="utf-8", errors="replace") as f:
-              diff_text = f.read()
+          with open("progress-short.md", "r", encoding="utf-8", errors="replace") as f:
+              progress_text = f.read()
 
           repo = os.environ.get("REPO", "")
           actor = os.environ.get("ACTOR", "")
@@ -57,8 +63,9 @@ jobs:
               f"Author: {actor}\n"
               f"Commit: {commit_message}\n"
               f"{commit_url}\n\n"
-              "```diff\n"
-              f"{diff_text}\n"
+              "追加された内容:\n"
+              "```md\n"
+              f"{progress_text}\n"
               "```"
           )
 
@@ -80,3 +87,4 @@ jobs:
           with urllib.request.urlopen(request) as response:
               print(response.status)
           PY
+````
