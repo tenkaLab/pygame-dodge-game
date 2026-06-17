@@ -24,4 +24,6 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
     ```
 
 ## Screenshot
-<img src="docs/images/screenshot/ver0.1.png" width="300">
+<img src="docs/images/screenshot/ver0.2/0.png" width="250">
+<img src="docs/images/screenshot/ver0.2/1.png" width="250">
+<img src="docs/images/screenshot/ver0.2/2.png" width="250">
