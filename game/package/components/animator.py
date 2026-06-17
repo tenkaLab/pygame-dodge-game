@@ -1,6 +1,6 @@
 import pygame
 
-from game.package.base_object.component import Component
+from game.package.base_objects.component import Component
 
 class AnimationData:
 
@@ -17,6 +17,9 @@ class AnimationData:
         self.is_loop: bool = is_loop
 
         self._scaled_cache: dict[tuple[float, float], list[pygame.Surface]] = {}
+
+    def get_frames(self) -> list[pygame.Surface]:
+        return self.frames
 
     def get_scaled_frames(self, scale: tuple[float, float]) -> list[pygame.Surface]:
         if scale not in self._scaled_cache:
@@ -37,7 +40,7 @@ class AnimationData:
 class AnimationPlayer:
 
     def __init__(self):
-        self.animation: AnimationData | None = None
+        self.animation_data: AnimationData | None = None
         self.is_playing: bool = False
         self.frame_index: int = 0
         self.elapsed: float = 0.0
@@ -46,25 +49,27 @@ class AnimationPlayer:
     def update(self, dt: float) -> None:
         if self.is_playing:
 
-            if self.animation is None:
+            if self.animation_data is None:
                 return
 
-            frame_duration = 1.0 / self.animation.fps
+            frame_duration = 1.0 / self.animation_data.fps
             self.elapsed += dt
 
             if self.elapsed >= frame_duration:
                 self.elapsed -= frame_duration
                 next_index = self.frame_index + 1
 
-                if next_index >= len(self.animation.frames):
-                    if self.animation.is_loop:
+                if next_index >= len(self.animation_data.frames):
+                    if self.animation_data.is_loop:
                         self.frame_index = 0
                     else:
-                        self.frame_index = len(self.animation.frames) - 1
+                        self.frame_index = len(self.animation_data.frames) - 1
                         self.is_playing = False
                 else:
                     self.frame_index = next_index
 
+    def get_current_frame(self):
+        return self.animation_data.get_frames()[self.frame_index]
 
     def play(self) -> None:
         self.is_playing = True
@@ -89,17 +94,17 @@ class Animator(Component):
         self.sprite_renderer = self.parent.get_component("SpriteRenderer")
     
         if len(self.animations) >= 1:
-            self.animation_player.animation = self.animations[0]
+            self.animation_player.animation_data = self.animations[0]
             
         return super().start()
 
     def update(self):
         self.animation_player.update(self.engine.delta_time)
 
-        frames: list[pygame.Surface] = self.animation_player.animation.get_scaled_frames(tuple(self.transform.scale.xy))
+        frames: list[pygame.Surface] = self.animation_player.animation_data.get_scaled_frames(tuple(self.transform.scale.xy))
         frame_index: int = self.animation_player.frame_index
 
-        self.sprite_renderer.set_surface(surface= frames[frame_index])
+        self.sprite_renderer.render_data.surface = frames[frame_index]
 
         return super().update()
 
@@ -118,7 +123,7 @@ class Animator(Component):
 
     def change_animation(self, name: str, autoplay: bool = False, force_restart: bool = False) -> None:
 
-        animation = self.animation_player.animation
+        animation = self.animation_player.animation_data
         if animation is not None:
             if animation.is_loop == True and animation.name == name:
                 return
@@ -127,7 +132,7 @@ class Animator(Component):
         if animation is None:
             return
         
-        self.animation_player.animation = animation
+        self.animation_player.animation_data = animation
 
         if autoplay:
             self.animation_player.play()

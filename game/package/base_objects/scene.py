@@ -1,6 +1,5 @@
 import pygame
-
-from game.package.gameobject.worldobject.camera import Camera
+from game.package.gameobjects.worldobjects.camera import Camera
 
 
 class Scene:
@@ -12,7 +11,10 @@ class Scene:
         self.world = [] 
         self.canvas = []
 
-        self.camera = self.add_worldobject(Camera())
+        self.camera = Camera()
+        self.add_worldobject(self.camera)
+
+        self.engine = None
 
     def start(self):
         pass
@@ -72,8 +74,8 @@ class Scene:
             draw_surface = render.surface
 
             draw_position = (
-                (render.position[0] - camera_transform.position.x) + camera.offset.x,
-                (render.position[1] - camera_transform.position.y) + camera.offset.y
+                (render.position[0] - camera_transform.position.x) + camera.offset_position.x,
+                (render.position[1] - camera_transform.position.y) + camera.offset_position.y
             )
 
             self.engine.screen.blit(

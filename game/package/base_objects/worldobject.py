@@ -1,5 +1,5 @@
-from game.package.base_object.gameobject import Gameobject
-from game.package.component.transform import Transform
+from game.package.base_objects.gameobject import Gameobject
+from game.package.components.transform import Transform
 
 class Worldobject(Gameobject):
     

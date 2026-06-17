@@ -1,5 +1,5 @@
-from game.package.base_object.gameobject import Gameobject
-from game.package.component.transform import RectTransform
+from game.package.base_objects.gameobject import Gameobject
+from game.package.components.transform import RectTransform
 
 class Uiobject(Gameobject):
 

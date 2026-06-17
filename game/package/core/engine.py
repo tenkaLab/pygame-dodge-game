@@ -19,8 +19,11 @@ class Engine:
         self.running = False
 
         self.screen = pygame.Surface(config.game["screen_size"])
-        init_scene_class = config.game["initial_scene_class"]
-        self.current_scene = init_scene_class()
+
+        self.scenes = config.scenes
+
+        init_scene_index = config.game["initial_scene_index"]
+        self.current_scene = self.scenes[init_scene_index]()
 
         self.max_tps = config.game["max_tps"]
         self.max_fps = config.game["max_fps"]
@@ -29,9 +32,21 @@ class Engine:
 
         self.input_status = InputStatus()
 
+        self.scheduler = Scheduler()
+
+        self.debug_settings = config.debug
+
+        self.global_values = config.global_values
+
     def start(self):
         self.running = True
         self._loop()
+
+    def change_scene(self, index):
+        self.current_scene = self.scenes[index]()
+
+    def shutdown(self):
+        self.running = False
 
     def _loop(self):
         clock = pygame.time.Clock()
@@ -74,10 +89,11 @@ class Engine:
                 fps_count = 0
 
     def _update(self):
-        self._process_input_events()
-        self.screen.fill((0, 0, 0))
+        self._process_events()
+        self.scheduler.update(self.delta_time)
 
         scene = self.current_scene
+        
         if not scene.is_started:  
             scene.engine = self
             scene.start()
@@ -86,7 +102,7 @@ class Engine:
         if scene.active and scene.is_started:
             scene.update()
 
-    def _process_input_events(self):
+    def _process_events(self):
 
         for event in pygame.event.get():
     
@@ -95,6 +111,9 @@ class Engine:
 
             elif event.type == pygame.KEYDOWN:
                 self.input_status.keys[pygame.key.name(event.key)] = True
+
+                if self.debug_settings["print_key_events"]:
+                    print(pygame.key.name(event.key))
 
             elif event.type == pygame.KEYUP:
                 self.input_status.keys[pygame.key.name(event.key)] = False
@@ -110,6 +129,8 @@ class Engine:
                 self.input_status.mouse_buttons = [False] * 5
                                  
     def _draw(self):
+        self.screen.fill((0, 0, 0))
+
         scene = self.current_scene
         if scene.active and scene.is_started:
             scene.draw()
@@ -119,12 +140,32 @@ class Engine:
 
         pygame.display.flip()
 
-    def shutdown(self):
-        self.running = False
-
 
 class InputStatus:
     def __init__(self):
         self.keys = {}
         self.mouse_position = (0,0)
         self.mouse_buttons = [False] * 5
+
+class Scheduler:
+    def __init__(self):
+        self.events = []
+
+    def schedule_event(self, delay, callback, *args, **kwargs):
+        self.events.append({
+            "time": delay,
+            "callback": callback,
+            "args" : args,
+            "kwargs" : kwargs
+        })
+
+    def update(self, delta_time):
+        for event in self.events[:]:
+            event["time"] -= delta_time
+
+            if event["time"] <= 0:
+                event["callback"](
+                    *event["args"],
+                    **event["kwargs"]
+                )
+                self.events.remove(event)

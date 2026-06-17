@@ -2,8 +2,8 @@ import pygame
 from pathlib import Path
 
 from game.package.core.render_data import RenderData
-from game.package.base_object.component import Component
-from game.package.component import Transform, RectTransform
+from game.package.base_objects.component import Component
+from game.package.components import Transform, RectTransform
 
 from game.package.util.make_empty_surface import make_empty_surface
 
@@ -12,7 +12,8 @@ class SpriteRenderer(Component):
     def __init__(self):
         super().__init__()
 
-        self.surface: pygame.Surface = make_empty_surface()
+        self.original_surface: pygame.Surface = make_empty_surface()
+        self.flag = False
         self.render_data = RenderData()
 
     def start(self):
@@ -27,29 +28,30 @@ class SpriteRenderer(Component):
 
     def update(self):
 
-        if (
-            self.surface is None or 
-            not (
-                self.transform.__class__ == Transform or
-                self.transform.__class__ == RectTransform
+        if self.flag:
+            osw, osh = self.original_surface.get_size()
+            psx, psy = self.transform.scale.xy
+            scaled_surface = pygame.transform.scale(
+                self.original_surface, (
+                    osw * psx, 
+                    osh * psy
+                )
             )
-            ):
-            return super().update()
+            self.render_data.surface = scaled_surface
+            self.flag = False
         
-
-        self.render_data.surface = pygame.transform.scale(
-            self.surface, (
-                self.surface.get_width() * self.transform.scale.x, 
-                self.surface.get_height() * self.transform.scale.y
-            )
-        )
         self.render_data.position = self.transform.position
         self.render_data.layer = self.transform.layer
 
         return super().update()
     
+    def get_surface(self) -> pygame.Surface:
+        return self.original_surface
+    
     def set_surface(self, surface : pygame.Surface):
-        self.surface = surface
+        self.original_surface = surface
+        self.flag = True
 
     def load_surface(self, image_path: Path):
-        self.surface = pygame.image.load(image_path)
+        self.original_surface = pygame.image.load(image_path)
+        self.flag = True

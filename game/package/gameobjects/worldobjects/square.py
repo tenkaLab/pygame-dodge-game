@@ -1,8 +1,8 @@
 import pygame
 
-from game.package.base_object.worldobject import Worldobject
-from game.package.component.sprite_renderer import SpriteRenderer
-from game.package.component.collider import Collider
+from game.package.base_objects.worldobject import Worldobject
+from game.package.components.sprite_renderer import SpriteRenderer
+from game.package.components.collider import Collider
 
 class Square(Worldobject):
     def __init__(
