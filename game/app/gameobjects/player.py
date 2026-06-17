@@ -1,12 +1,12 @@
 import pygame
 
-from game.package.base_object import Worldobject, Component
-from game.package.component import Transform, SpriteRenderer, Collider
-from game.app.component.state import State
+from game.package.base_objects import Worldobject, Component
+from game.package.components import Transform, SpriteRenderer, Collider
+from game.app.components.state import State
 
 class Player(Worldobject):
 
-    def __init__(self, position:tuple, scale:tuple, layer:int,):
+    def __init__(self, position:tuple, scale:tuple, layer:int, speed):
         super().__init__()
         
         transform = self.get_component("Transform")
@@ -24,12 +24,10 @@ class Player(Worldobject):
         collider.is_collision_enabled = False
         collider.add_hitbox((-0,-0), (10,10), (255,0,0,200))
         self.add_component(collider)
-
-        state = State() 
-        state.speed = 10
-        self.add_component(state)
         
         self.add_component(Controller())
+
+        self.speed = speed
         
 class Controller(Component):
 
@@ -47,7 +45,7 @@ class Controller(Component):
         keys = self.engine.input_status.keys
         dt = self.engine.delta_time
 
-        w, h = self.sprite_renderer.surface.get_size()
+        w, h = self.sprite_renderer.get_surface().get_size()
         sx, sy = self.transform.scale
         scaled_size = (
             w * sx,
@@ -55,28 +53,28 @@ class Controller(Component):
         )
 
         if keys.get("w", False):
-            self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
+            self.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * dt
 
             if self.transform.position.y < 0:
-                self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
+                self.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * dt
 
         if keys.get("s", False):
-            self.transform.position.y += (scaled_size[1] / 2) * self.state.speed * dt
+            self.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * dt
 
             if self.transform.position.y >= self.engine.screen.get_height() - scaled_size[1]:
-                self.transform.position.y -= (scaled_size[1] / 2) * self.state.speed * dt
+                self.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * dt
 
         if keys.get("a", False):
-            self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
+            self.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * dt
 
             if self.transform.position.x < 0:
-                self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
+                self.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * dt
         
         if keys.get("d", False):
-            self.transform.position.x += (scaled_size[0] / 2) * self.state.speed * dt
+            self.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * dt
 
             if self.transform.position.x >= self.engine.screen.get_width() - scaled_size[0]:
-                self.transform.position.x -= (scaled_size[0] / 2) * self.state.speed * dt
+                self.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * dt
 
         if self.collider.is_colliding():
             self.engine.current_scene.gameover = True

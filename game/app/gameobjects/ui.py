@@ -1,7 +1,7 @@
 import pygame
 
-from game.package.base_object import Uiobject
-from game.package.component import SpriteRenderer
+from game.package.base_objects import Uiobject
+from game.package.components import SpriteRenderer
 
 class Image(Uiobject):
     def __init__(self, position, size, scale, layer):

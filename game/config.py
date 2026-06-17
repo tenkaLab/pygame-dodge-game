@@ -5,7 +5,7 @@ from game.app.scenes.result_scene import ResultScene
 
 game = {
     "name" : "pygame-dodge-game",
-    "version" : "0.1",
+    "version" : "0.2",
     "icon_image_path" : paths.DEFAULT_ICON_IMAGE,
     
     "window_size" : [640, 480],

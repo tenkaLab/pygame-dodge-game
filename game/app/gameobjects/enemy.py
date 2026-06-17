@@ -1,9 +1,10 @@
-from game.package.gameobject import Square
-from game.package.component import Collider
+from game.package.gameobjects import Square
+from game.package.components import Collider
 
 class Enemy(Square):
-    def __init__(self, position, scale, layer, color):
+    def __init__(self, position, scale, layer, color, speed):
         super().__init__(position, scale, layer, color)
+        self.speed = 5 + speed
     
     def start(self):
         self.transfrom = self.get_component("Transform")

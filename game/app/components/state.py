@@ -1,4 +1,4 @@
-from game.package.base_object.component import Component
+from game.package.base_objects import Component
 
 class State(Component):
     def __init__(self):
