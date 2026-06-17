@@ -2,9 +2,13 @@ name: Progress Additions Notify
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - "docs/progress.md"
-      - ".github/workflows/progress-diff-notify.yml"
+      - "docs/progress/**/*.md"
+
+permissions:
+  contents: read
 
 jobs:
   notify:
@@ -14,12 +18,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Get progress additions
         shell: bash
         run: |
-          git diff --unified=0 HEAD~1 HEAD -- docs/progress.md > progress.diff || true
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          # 新規ブランチpush等で before が空/ゼロの場合の保険
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE="$(git rev-list --max-parents=0 "$AFTER")"
+          fi
+
+          git diff --unified=0 "$BEFORE" "$AFTER" -- docs/progress > progress.diff || true
 
           grep '^+' progress.diff \
             | grep -v '^+++' \
@@ -27,10 +39,14 @@ jobs:
             > progress-additions.md || true
 
           if [ ! -s progress-additions.md ]; then
-            echo "docs/progress.md の追加行は検出されませんでした。workflowのみ更新された可能性があります。" > progress-additions.md
+            echo "docs/progress 配下に追加行がないため、通知をスキップします。"
+            echo "should_notify=false" >> "$GITHUB_ENV"
+          else
+            echo "should_notify=true" >> "$GITHUB_ENV"
           fi
 
       - name: Notify Discord
+        if: env.should_notify == 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
@@ -85,9 +101,6 @@ jobs:
               header = header[:1850] + "\n..."
 
           send_discord_message(header)
-
-          if not progress_text:
-              progress_text = "追加された内容はありません。"
 
           chunk_size = 1500
           chunks = [
