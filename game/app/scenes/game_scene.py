@@ -1,4 +1,5 @@
 import random
+import json
 
 from game.package.base_objects import Scene
 from ..gameobjects.enemy import Enemy
@@ -6,74 +7,166 @@ from ..gameobjects.player import Player
 from ..gameobjects.ui import Text
 
 
+class Timer:
+    def __init__(self, target_method, target_time):
+        self.method = target_method
+        self.target_time = target_time
+        self.timer = 0
+
+    def update(self, dt):
+        self.timer += dt
+
+        while self.timer >= self.target_time:
+            self.method()
+            self.timer -= self.target_time
+
+
 class GameScene(Scene):
 
     def start(self):
 
-        player = Player(
-            position= (
-                self.engine.screen.get_width() // 2, 
-                self.engine.screen.get_height() // 1.5
-            ), 
-            scale= (2,2), 
-            layer= 4,
-            speed= 13
-        )
-        
-        self.add_worldobject(player)
+        with open("./game/app/assets/parameter.json", "r") as f:
+            self.parameter = json.load(f)
 
-        self.score_num_text = Text((0.1,0.1), 50, (1,1), 1, "0", (255,255,255))
-        self.add_uiobject(self.score_num_text)
+        self.player_init_move_speed = self.parameter["player"]["init_move_speed"]
 
-        self.gameover_text = Text((0.5,0.5), 50, (1,1), 1, "Gameover", (255,255,255))
-        self.add_uiobject(self.gameover_text)
-        self.gameover_text.active = False
+        self.enemy_move_speed = self.parameter["enemy"]["init_move_speed"]
+        self.enemy_spawn_speed = self.parameter["enemy"]["init_spawn_speed"]
 
-        self.timer = 0
+        self.spawn_interval_decrease = self.parameter["difficulty"]["enemy_spawn_interval_decrease"]
+        self.enemy_move_speed_increase = self.parameter["difficulty"]["enemy_move_speed_increase"]
+        self.difficulty_increase_interval = self.parameter["difficulty"]["increase_interval"]
 
-        self.gameover: bool = False
+        self.score: float = 0.0
+        self.level: int = 0
+        self.is_gameover: bool = False
 
-        self.level = 0
-        self.score = 0
+        self.timers: dict[str, Timer] = {
+            "count_score": Timer(self.count_score, 0.1),
+            "spawn_enemy": Timer(self.spawn_enemy, self.enemy_spawn_speed),
+            "up_difficulty": Timer(
+                self.up_difficulty,
+                self.difficulty_increase_interval
+            )
+        }
 
-        self.flag = False
+        self.add_gameobjects()
 
         return super().start()
-    
+
     def update(self):
-        
+
         keys = self.engine.input_status.keys
+        dt = self.engine.delta_time
 
         if keys.get("escape", False):
             self.engine.shutdown()
 
-        if self.gameover:
-            if not self.flag:
-                self.gameover_text.active = True
-                self.engine.global_values["score"] = self.score
-                self.engine.scheduler.schedule_event(1, self.engine.change_scene, 2)
-                self.flag = True
+        if self.is_gameover:
             return
-            
-        dt = self.engine.delta_time
 
-        self.timer += dt
-        if self.timer >= 0.1:
-
-            self.level += 0.1
-            _speed = self.level * 0.01
-            enemy = Enemy(
-                position= (random.randint(0, self.engine.screen.get_width()), 0), 
-                scale= (random.randint(20,60),random.randint(20,60)), 
-                layer= 1, 
-                color= (0,0,255),
-                speed= _speed
-            )
-            self.add_worldobject(enemy)
-
-            self.score = round((self.score + 0.1), 2)
-            self.score_num_text.set_text(str(self.score))
-            
-            self.timer = 0
+        self.update_timers(dt)
 
         return super().update()
+
+
+    def add_gameobjects(self):
+
+        player = Player(
+            position=(
+                self.engine.screen.get_width() // 2,
+                self.engine.screen.get_height() // 1.5
+            ),
+            scale=(2, 2),
+            layer=4,
+            init_speed=self.player_init_move_speed
+        )
+
+        self.add_worldobject(player)
+
+        self.score_num_text = Text(
+            position=(0.1, 0.1),
+            size=50,
+            scale=(1, 1),
+            layer=1,
+            text="0",
+            color=(255, 255, 255)
+        )
+
+        self.gameover_text = Text(
+            position=(0.5, 0.5),
+            size=50,
+            scale=(1, 1),
+            layer=1,
+            text="Gameover",
+            color=(255, 255, 255),
+            init_active=False
+        )
+
+        self.add_uiobject(self.score_num_text)
+        self.add_uiobject(self.gameover_text)
+
+
+    def update_timers(self, dt):
+
+        for timer in self.timers.values():
+            timer.update(dt)
+
+
+    def count_score(self):
+
+        self.score += 0.1
+        self.score = round(self.score, 1)
+
+        self.score_num_text.set_text(f"{self.score:.1f}")
+
+    def spawn_enemy(self):
+
+        enemy = Enemy(
+            init_speed=self.enemy_move_speed
+        )
+
+        self.add_worldobject(enemy)
+
+    def up_difficulty(self):
+
+        self.level += 1
+
+        self.enemy_move_speed += (
+            self.enemy_move_speed_increase
+        )
+
+        self.enemy_spawn_speed -= (
+            self.spawn_interval_decrease
+        )
+
+        self.enemy_spawn_speed = max(
+            0.02,
+            self.enemy_spawn_speed
+        )
+
+        self.timers["spawn_enemy"].target_time = (
+            self.enemy_spawn_speed
+        )
+
+
+    def set_gameover(self):
+
+        if self.is_gameover:
+            return
+
+        self.is_gameover = True
+
+        self.on_gameover()
+
+    def on_gameover(self):
+
+        self.gameover_text.active = True
+
+        self.engine.global_values["score"] = self.score
+
+        self.engine.scheduler.schedule_event(
+            1,
+            self.engine.change_scene,
+            2
+        )

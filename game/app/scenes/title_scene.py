@@ -6,16 +6,33 @@ class TitleScene(Scene):
 
     def start(self):
 
-        title_text = Text((0.5,0.3), 200, (0.5,0.5), 1, str("DODGE GAME"), (255,255,255))
-        self.add_uiobject(title_text)
+        title_text = Text(
+            position=(0.5,0.3),  
+            scale=(0.5,0.5), 
+            layer=1,
+            text= "DODGE GAME",
+            size=200, 
+            color=(255,255,255)
+            )
 
-        title_text = Text((0.5,0.7), 100, (0.25,0.25), 1, str("Press the Eenter key to start the game "), (255,255,255))
+        guide_text = Text(
+            position=(0.5,0.7), 
+            scale=(0.25,0.25), 
+            layer=1, 
+            text="Press the Eenter key to start the game",
+            size=100,  
+            color=(255,255,255)
+        )
+
         self.add_uiobject(title_text)
+        self.add_uiobject(guide_text)
 
         return super().start()
     
     def update(self):
+        
         keys = self.engine.input_status.keys
+
         if keys.get("escape", False):
             self.engine.shutdown()
 

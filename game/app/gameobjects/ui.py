@@ -26,9 +26,12 @@ class Text(Uiobject):
         scale: tuple[float, float], 
         layer: int, 
         text: str, 
-        color:tuple[int,int,int]
+        color:tuple[int,int,int],
+        init_active: bool = True
     ):
         super().__init__()
+
+        self.active = init_active
 
         transform = self.get_component("RectTransform")
         transform.position = position
@@ -38,7 +41,7 @@ class Text(Uiobject):
         self.add_component(SpriteRenderer())
 
         self.font = pygame.font.SysFont(None, size)
-        self.text: str = text or "None"
+        self.text: str = str(text) or "None"
         self.color: tuple[int,int,int] = color or (255,255,255)
 
         self.flag = True

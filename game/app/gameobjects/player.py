@@ -6,7 +6,7 @@ from game.app.components.state import State
 
 class Player(Worldobject):
 
-    def __init__(self, position:tuple, scale:tuple, layer:int, speed):
+    def __init__(self, position:tuple, scale:tuple, layer:int, init_speed):
         super().__init__()
         
         transform = self.get_component("Transform")
@@ -18,16 +18,17 @@ class Player(Worldobject):
         surface = pygame.Surface((10,10))
         surface.fill((255,0,0))
         sprite.set_surface(surface)
-        self.add_component(sprite)
-
+        
         collider = Collider()
         collider.is_collision_enabled = False
-        collider.add_hitbox((-0,-0), (10,10), (255,0,0,200))
-        self.add_component(collider)
+        collider.add_hitbox((0,0), (10,10), (0,255,0,200))
         
-        self.add_component(Controller())
 
-        self.speed = speed
+        self.add_component(Controller())
+        self.add_component(sprite)
+        self.add_component(collider)
+
+        self.speed = init_speed
         
 class Controller(Component):
 
@@ -77,6 +78,6 @@ class Controller(Component):
                 self.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * dt
 
         if self.collider.is_colliding():
-            self.engine.current_scene.gameover = True
+            self.engine.current_scene.set_gameover()
 
         return super().update()
