@@ -27,14 +27,16 @@ class Scene:
                     go.start()
                     go.is_started = True
                 
-                go.update()
-
                 for comp in go.components.values():
                     if comp.is_started == False:
                         comp.engine = self.engine
                         comp.start()
                         comp.is_started = True
-                        
+
+            for go in gameobjects:
+                go.update()
+                
+                for comp in go.components.values():       
                     comp.update()
 
     def draw(self):

@@ -10,7 +10,8 @@ class Square(Worldobject):
             position: tuple[float,float], 
             scale: tuple[float,float], 
             layer: int,
-            color: tuple[int,int,int]
+            color: tuple[int,int,int],
+            hitbox_color: tuple[int,int,int]
         ):
         super().__init__()
 
@@ -26,5 +27,5 @@ class Square(Worldobject):
         self.add_component(sprite)
 
         collider = Collider()
-        collider.add_hitbox((0,0),(1,1), (255,0,0))
+        collider.add_hitbox((0,0),(1,1), (hitbox_color))
         self.add_component(collider)
