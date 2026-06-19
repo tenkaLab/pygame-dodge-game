@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          lfs: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,12 +32,12 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build ./
+          python -m pygbag --build minimal_sample
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: build/web
+          path: minimal_sample/build/web
 
   deploy:
     needs: build

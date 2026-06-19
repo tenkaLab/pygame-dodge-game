@@ -1,14 +1,14 @@
 import asyncio
 import pygame
 import sys
-
-pygame.init()
+from game.src import image
 
 class SampleScene:
     def __init__(self):
         self.font = pygame.font.Font(None, 36)
         self.is_paused = False
         self.time = 0
+        self.image = image.getImage()
 
     def update(self, clock, input_event):
         if input_event["keydown"]:
@@ -21,14 +21,18 @@ class SampleScene:
         surface.blit(text_surface, (100, 100))
         text_surface = self.font.render("Click/Space to pause/resume", True, (255, 255, 255))
         surface.blit(text_surface, (100, 150))
+        surface.blit(self.image, (100, 200))
+
 
 async def main():
+    pygame.init()
     screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
 
     scene = SampleScene()
 
     while scene:
+        quit_event = False
         input_event = { "keydown": False }
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,11 +44,12 @@ async def main():
                 if event.key == pygame.K_SPACE:  # Space key
                     input_event["keydown"] = True
 
-        scene.update(clock, input_event)
+        if scene:
+            scene.update(clock, input_event)
 
-        screen.fill((0, 0, 0))
-        scene.render(screen)
-        pygame.display.flip()
+            screen.fill((0, 0, 0))
+            scene.render(screen)
+            pygame.display.flip()
 
         clock.tick(60)
         await asyncio.sleep(0)
