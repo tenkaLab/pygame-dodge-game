@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 
 from game import config
 
@@ -38,9 +39,9 @@ class Engine:
 
         self.global_values = config.global_values
 
-    def start(self):
+    async def start(self):
         self.running = True
-        self._loop()
+        await self._loop()
 
     def change_scene(self, index):
         self.current_scene = self.scenes[index]()
@@ -48,7 +49,7 @@ class Engine:
     def shutdown(self):
         self.running = False
 
-    def _loop(self):
+    async def _loop(self):
         clock = pygame.time.Clock()
         accumulator = 0.0
         fixed_dt = 1.0 / self.max_tps
@@ -61,6 +62,8 @@ class Engine:
 
         while self.running:
             dt = clock.tick(self.max_fps) / 1000
+            await asyncio.sleep(0)  
+
             accumulator += min(dt, fixed_dt * 5)
 
             fps_timer += dt

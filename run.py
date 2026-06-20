@@ -1,5 +1,7 @@
-from game.package.core.engine import Engine
+import asyncio
+
+from game.main import main
+
 
 if __name__ == "__main__":
-    e = Engine()
-    e.start()
+    asyncio.run(main())
