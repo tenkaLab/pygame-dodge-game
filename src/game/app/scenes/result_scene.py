@@ -1,5 +1,6 @@
 import json
 
+from game import paths
 from game.package.base_objects import Scene
 from game.package.gameobjects.uiobjects import Text
 
@@ -21,11 +22,12 @@ class ResultScene(Scene):
         hiscore = 0
 
         try :
-            with open("./game/app/assets/data.json", "r", encoding="utf-8") as f:
+            with open(paths.APP_ASSET_DIR / "data.json", "r", encoding="utf-8") as f:
                 data = json.load(f)
             
             if not hasattr(data, "hiscore"):
                 hiscore = data["hiscore"]
+            print("リザルトシーンのデータロードが成功しました。")
         except:
             hiscore = 0
             print("リザルトシーンのデータロードエラーが発生しました。")
@@ -33,7 +35,7 @@ class ResultScene(Scene):
         if score > hiscore:
             hiscore = score
 
-        with open("./game/app/assets/data.json",  "w", encoding="utf-8") as f:
+        with open(paths.APP_ASSET_DIR / "data.json",  "w", encoding="utf-8") as f:
             json.dump({"hiscore":hiscore}, f)
 
         self.score_numtext = Text((0.5,0.65), 100, (0.25,0.25), 1, str(score), (255,255,255))
