@@ -32,7 +32,7 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build game
+          python -m pygbag --build-dir build game
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
