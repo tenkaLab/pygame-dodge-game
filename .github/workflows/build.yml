@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - feature/add_deploy_to_pages
+      - check/pygbag-compatibility
 
 jobs:
   build:
@@ -32,12 +32,12 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build minimal_sample
+          python -m pygbag --build game
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: minimal_sample/build/web
+          path: build/web
 
   deploy:
     needs: build
