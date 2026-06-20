@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - check/pygbag-compatibility
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build ./
+          python -m pygbag --build game
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4

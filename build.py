@@ -12,7 +12,7 @@ _icon_image_path = config.game["icon_image_path"]
 ROOT = Path(__file__).resolve().parent
 DIR_NAME = datetime.datetime.now().strftime(f"{_name}_v{_version}_%Y%m%d_%H%M%S")
 
-BUILD_ROOT = ROOT / "build" / DIR_NAME
+BUILD_ROOT = ROOT / "build" / "win" / DIR_NAME
 BUILD_ROOT.mkdir(parents=True, exist_ok=True)
 
 
