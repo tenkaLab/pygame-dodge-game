@@ -4,6 +4,7 @@ from game.package.base_objects import Worldobject, Component
 from game.package.components import Transform, SpriteRenderer, Collider
 from game.app.components.state import State
 
+
 class Player(Worldobject):
 
     def __init__(self, position:tuple, scale:tuple, layer:int, init_speed):

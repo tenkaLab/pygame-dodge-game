@@ -1,7 +1,7 @@
 import json
 
 from game.package.base_objects import Scene
-from game.app.gameobjects.ui import Text
+from game.package.gameobjects.uiobjects import Text
 
 
 class ResultScene(Scene):

@@ -4,7 +4,7 @@ import json
 from game.package.base_objects import Scene
 from ..gameobjects.enemy import Enemy
 from ..gameobjects.player import Player
-from ..gameobjects.ui import Text
+from game.package.gameobjects.uiobjects import Text
 
 
 class Timer:
