@@ -1,10 +1,13 @@
 import random
 import json
 
+from game import paths
+
 from game.package.base_objects import Scene
+from game.package.gameobjects.uiobjects import Text
 from ..gameobjects.enemy import Enemy
 from ..gameobjects.player import Player
-from game.package.gameobjects.uiobjects import Text
+
 
 
 class Timer:
@@ -25,7 +28,7 @@ class GameScene(Scene):
 
     def start(self):
 
-        with open("./game/app/assets/parameter.json", "r") as f:
+        with open(paths.APP_ASSET_DIR / "parameter.json", "r") as f:
             self.parameter = json.load(f)
 
         self.player_init_move_speed = self.parameter["player"]["init_move_speed"]

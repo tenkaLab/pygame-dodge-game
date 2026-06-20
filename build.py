@@ -2,7 +2,7 @@ import subprocess
 import datetime
 from pathlib import Path
 
-from game import config
+from src.game import config
 
 
 _name = config.game["name"]
