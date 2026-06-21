@@ -31,12 +31,12 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build src
+          python -m pygbag --build dodge-game
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: src/build/web
+          path: build/web
 
   deploy:
     needs: build

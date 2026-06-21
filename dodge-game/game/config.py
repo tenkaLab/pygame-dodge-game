@@ -10,7 +10,7 @@ game = {
     "version" : "0.21",
     "icon_image_path" : paths.DEFAULT_ICON_IMAGE,
     
-    "window_size" : [640, 480],
+    "window_size" : [1280, 720],
     "screen_size" : [640, 480],
 
     "max_tps" : 30,

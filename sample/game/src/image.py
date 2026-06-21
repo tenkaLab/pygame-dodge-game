@@ -1,8 +1,6 @@
 import pygame
-from pathlib import Path
-import sys
+from game import paths 
 
 def getImage():
-    root = Path(__file__).resolve().parent.parent
-    print(root)
-    return pygame.image.load(root / "assets/item_04.png")
+    
+    return pygame.image.load(paths.ROOT / "assets/item_04.png")
