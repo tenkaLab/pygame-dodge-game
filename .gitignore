@@ -216,9 +216,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-
-# original dir
-build/*
-!build/web/
-!build/web/**

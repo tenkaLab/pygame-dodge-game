@@ -6,7 +6,7 @@ env:
 on:
   push:
     branches:
-      - check/pygbag-compatibility
+      - main
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: build/web
+          path: dodge-game/build/web
 
   deploy:
     needs: build
