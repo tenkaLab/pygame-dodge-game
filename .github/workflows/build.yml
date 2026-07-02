@@ -31,14 +31,17 @@ jobs:
 
       - name: Build project
         run: |
-          python -m pygbag --build dodge-game
+          python ./build.py --wasm --force --output-dir ci
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: dodge-game/build/web
+          path: build/ci/wasm/web
 
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     needs: build
     runs-on:
       - ubuntu-latest

@@ -1,6 +1,6 @@
 # NOTE:
-# Keep this import for pygbag build.
-# In some environments, the build did not work when pygame was not imported in main.py.
+# pygbagでのビルド時、main.py 内で pygame をインポートしていないと動作しないケースがあったため残す。
+
 import pygame
 import asyncio
 
