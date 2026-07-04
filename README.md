@@ -4,7 +4,7 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
 
 ## How to Play
 
-1. Python をインストール（推奨: 3.13.9）
+1. Python 3.13.9 をインストール
 
 2. リポジトリをクローン
 
@@ -21,7 +21,8 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
 4. 依存関係ライブラリをインストール
 
    ```bash
-   python -m pip install -r requirements.txt
+   py -3.13 -m pip install -r requirements.txt
+
    ```
 
 5. 特定のプロトタイプのディレクトリに移動
@@ -36,7 +37,7 @@ Pygameで小さな避けゲーを作り、制作テンプレート化を目指�
 6. ゲームを起動
 
    ```bash
-   python main.py
+   py -3.13 main.py
    ```
 
 ## Screenshot
