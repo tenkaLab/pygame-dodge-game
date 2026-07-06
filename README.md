@@ -1,45 +1,42 @@
 # pygame-dodge-game
 
-Pygameで小さな避けゲーを作り、制作テンプレート化を目指す学習用プロジェクトです。
+[日本語](./docs/README.ja.md)
 
-## How to Play
+## About
+This is a learning project to create a small dodge game with Pygame while building a reusable game development template.
 
 
-1. Python 3.13.9 をインストール
+## Play Locally
 
-2. リポジトリをクローン
+#### Install Python 3.13.9
 
-   ```bash
-   git clone -b feature/v0.3 https://github.com/tenkaLab/pygame-dodge-game.git
-   ```
+#### Clone this repository
 
-3. ディレクトリに移動
+```bash
+git clone https://github.com/tenkaLab/pygame-dodge-game.git
+cd pygame-dodge-game
+```
 
-   ```bash
-   cd pygame-dodge-game
-   ```
+#### Install dependencies
+```bash
+py -3.13 -m pip install -r requirements.txt
+```
+#### Start the Game
+```bash
+cd dodge-game
+py -3.13 main.py
+```
 
-4. 依存関係ライブラリをインストール
+## Play Online
 
-   ```bash
-   py -3.13 -m pip install -r requirements.txt
+Visit: https://tenkalab.github.io/pygame-dodge-game/
 
-   ```
 
-5. 特定のプロトタイプのディレクトリに移動
-
-   ```bash
-   cd <directory_name>
-
-   # 例
-   cd game-dash-function
-   ```
-
-6. ゲームを起動
-
-   ```bash
-   py -3.13 main.py
-   ```
 
 ## Screenshot
-<img src="docs/images/screenshot/ver0.2/0.png" width="250"> <img src="docs/images/screenshot/ver0.2/1.png" width="250"> <img src="docs/images/screenshot/ver0.2/2.png" width="250">
+<p align="center">
+  <img src="docs/images/screenshot/ver0.2/0.png" width="250">
+  <img src="docs/images/screenshot/ver0.2/1.png" width="250">
+  <img src="docs/images/screenshot/ver0.2/2.png" width="250">
+</p>
+
