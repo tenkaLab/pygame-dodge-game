@@ -26,7 +26,7 @@ class Enemy(Worldobject):
         
         sprite = SpriteRenderer()
         surface = pygame.Surface((1,1))
-        surface.fill((119, 126, 65))
+        surface.fill((211, 211, 211))
         sprite.set_surface(surface)
         self.add_component(sprite)
 
