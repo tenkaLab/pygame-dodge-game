@@ -29,12 +29,11 @@ py -3.13 -m pip install -r requirements.txt
 cd <directory_name>
 
 # Example
-cd game-dash-function
+cd fpg-player-dash
 ```
 
 #### Start the Game
 ```bash
-cd dodge-game
 py -3.13 main.py
 ```
 
