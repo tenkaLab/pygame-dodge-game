@@ -21,16 +21,22 @@ cd pygame-dodge-game
 ```bash
 py -3.13 -m pip install -r requirements.txt
 ```
+#### Move to the feature prototyping game directory
+
+**fpg** = Feature Prototyping Game
+
+```bash
+cd <directory_name>
+
+# Example
+cd game-dash-function
+```
+
 #### Start the Game
 ```bash
 cd dodge-game
 py -3.13 main.py
 ```
-
-## Play Online
-
-Visit: https://tenkalab.github.io/pygame-dodge-game/
-
 
 
 ## Screenshot
