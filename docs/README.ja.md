@@ -1,30 +1,40 @@
 # pygame-dodge-game
+
 [English](../README.md)
 
 ## 概要
-Pygameで小さな避けゲーを作り、制作テンプレート化を目指す学習用プロジェクトです。
 
+Pygameで小さな避けゲームを制作しながら、再利用可能なゲーム開発テンプレートの構築を目指す学習用プロジェクトです。
 
 ## ローカルで実行
 
-#### Python 3.13.9 のインストール
+#### Python 3.13.9 をインストール
 
 #### リポジトリをクローン
+
 ```bash
 git clone https://github.com/tenkaLab/pygame-dodge-game.git
 cd pygame-dodge-game
 ```
 
 #### 依存ライブラリをインストール
+
 ```bash
 py -3.13 -m pip install -r requirements.txt
 ```
 
-#### ゲームを起動
+#### 試作機能専用ゲームのディレクトリへ移動
+
+**FPG** = Feature Prototyping Game
 ```bash
-cd dodge-game
-py -3.13 main.py
+cd <directory_name>
+
+# 例
+cd fpg-player-dash
 ```
 
-## ブラウザでプレイ
-https://tenkalab.github.io/pygame-dodge-game/
+#### ゲームを起動
+
+```bash
+py -3.13 main.py
+```
