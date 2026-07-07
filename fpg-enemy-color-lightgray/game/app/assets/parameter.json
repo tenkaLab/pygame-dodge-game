@@ -1,0 +1,14 @@
+{
+    "player": {
+        "init_move_speed": 14
+    },
+    "enemy": {
+        "init_move_speed": 5,
+        "init_spawn_speed": 0.2
+    },
+    "difficulty": {
+        "increase_interval": 1,
+        "enemy_move_speed_increase": 0.05,
+        "enemy_spawn_interval_decrease": 0.002
+    }
+}
