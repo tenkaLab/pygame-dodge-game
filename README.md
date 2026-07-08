@@ -23,13 +23,11 @@ py -3.13 -m pip install -r requirements.txt
 ```
 #### Move to the feature prototyping game directory
 
-**fpg** = Feature Prototyping Game
-
 ```bash
 cd <directory_name>
 
 # Example
-cd fpg-player-dash
+cd dodge-game
 ```
 
 #### Start the Game
@@ -37,6 +35,7 @@ cd fpg-player-dash
 py -3.13 main.py
 ```
 
+**fpg** = Feature Prototyping Game
 
 ## Screenshot
 <p align="center">
