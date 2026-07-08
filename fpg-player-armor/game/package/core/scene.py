@@ -130,15 +130,15 @@ class Scene:
             self, 
             screen,
             draw_surface, 
-            gameobject_position_ratio
+            gameobject_position
         ):
 
         screen_size = screen.get_size()
         surface_size = draw_surface.get_size()
 
         draw_position = (
-            (screen_size[0] * gameobject_position_ratio[0]) - (surface_size[0] // 2),
-            (screen_size[1] * gameobject_position_ratio[1]) - (surface_size[1] // 2)
+            gameobject_position.x - (surface_size[0] // 4),
+            gameobject_position.y - (surface_size[1] // 4)
         )
 
         screen.blit(

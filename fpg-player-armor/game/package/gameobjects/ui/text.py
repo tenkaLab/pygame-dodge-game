@@ -33,6 +33,7 @@ class Text(Gameuiobject):
         self.flag = True
 
     def start(self):
+        self.dt = self.engine.delta_time
         self.sprite_renderer = self.get_component("SpriteRenderer")
         self._set_surface()
         return super().start()

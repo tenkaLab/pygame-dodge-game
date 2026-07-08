@@ -16,6 +16,8 @@ class SpriteRenderer(Component):
         self.flag = True
         self.render_data = RenderData()
 
+        self.rotation_angle = 0
+
     def start(self):
         a = self.parent.get_component("Transform")
         b = self.parent.get_component("RectTransform")
@@ -29,18 +31,62 @@ class SpriteRenderer(Component):
     def update(self):
 
         if self.flag:
-            osw, osh = self.original_surface.get_size()
-            psx, psy = self.transform.scale.xy
+            # original_surface_size = self.original_surface.get_size()
+            # parent_scale = self.transform.scale.xy
+        
+
+            # surface = pygame.Surface((original_surface_size[0]*2, original_surface_size[1]*2))
+            # surface.fill((0,255,0))
+  
+            # sw, sh = surface.get_size()
+            # surface.blit(
+            #     self.original_surface, 
+            #     (
+            #         sw/2 - original_surface_size[0]/2,
+            #         sh/2 - original_surface_size[1]/2)
+            #     )
+
+            # rotated_surface = pygame.transform.rotate(surface, self.rotation_angle) 
+
+            # scaled_surface = pygame.transform.scale(
+            #     rotated_surface, 
+            #     (
+            #         rotated_surface.get_width() * parent_scale[0],
+            #         rotated_surface.get_height() * parent_scale[1]
+            #     )
+            # )
+
+            # self.render_data.surface = scaled_surface
+
+            parent_scale = self.transform.scale.xy
+
             scaled_surface = pygame.transform.scale(
-                self.original_surface, (
-                    osw * psx, 
-                    osh * psy
+                self.original_surface, 
+                (
+                    self.original_surface.get_width() * parent_scale[0],
+                    self.original_surface.get_height() * parent_scale[1]
                 )
             )
-            self.render_data.surface = scaled_surface
-            self.flag = False
         
-        self.render_data.position = self.transform.position
+            surface = pygame.Surface((scaled_surface.get_width()*2, scaled_surface.get_height()*2), pygame.SRCALPHA)
+            surface.blit(
+                scaled_surface, 
+                (
+                    surface.get_width()/2 - scaled_surface.get_width()/2,
+                    surface.get_height()/2 - scaled_surface.get_height()/2)
+                )
+
+            rotated_surface = pygame.transform.rotate(surface, self.rotation_angle) 
+
+            self.render_data.surface = rotated_surface
+
+            self.flag = False
+
+        self.render_data.position.xy = (
+            self.transform.position.x - self.render_data.surface.get_width()/4, 
+            self.transform.position.y - self.render_data.surface.get_height()/4
+        )
+        
         self.render_data.layer = self.transform.layer
 
         return super().update()
@@ -54,4 +100,8 @@ class SpriteRenderer(Component):
 
     def load_surface(self, image_path: Path):
         self.original_surface = pygame.image.load(image_path)
+        self.flag = True
+
+    def set_rotation_angle(self, angle_value):
+        self.rotation_angle = angle_value
         self.flag = True

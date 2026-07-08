@@ -32,6 +32,7 @@ class Transform(Component):
 class RectTransform(Transform):
     def __init__(self):
         super().__init__()
+        self.pos_ratio = (0,0)
 
     @property
     def position(self):
@@ -39,7 +40,20 @@ class RectTransform(Transform):
 
     @position.setter
     def position(self, position: tuple):
-        self._position = Vector2(
-            max(0.0, min(1.0, position[0])),
+        self.pos_ratio = (
+            max(0.0, min(1.0, position[0])), 
             max(0.0, min(1.0, position[1]))
+        )  
+
+        
+
+        
+    def update(self):
+        screen_size = self.engine.screen.get_size()
+
+        self._position = Vector2(
+            screen_size[0] * self.pos_ratio[0],
+            screen_size[1] * self.pos_ratio[1]
         )
+
+        return super().update()

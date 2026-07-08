@@ -39,7 +39,7 @@ class Player(Gameworldobject):
         self.init_speed = init_speed
         self.speed = self.init_speed
 
-        self.is_armored = False
+        self.is_armored = True
 
         self.cach_color = (0,0,0)
 
@@ -60,17 +60,19 @@ class Player(Gameworldobject):
         
 class Controller(Component):
 
-    def start(self):
+    def __init__(self):
+        super().__init__()
 
+        self.timer = 0
+
+    def start(self):
+        self.keys = self.engine.input_status.keys
+        self.dt= self.engine.delta_time
         self.camera = self.engine.current_scene.camera
-        self.block_ = False
         
         return super().start()
     
     def update(self):
-
-        keys = self.engine.input_status.keys
-        dt = self.engine.delta_time
 
         w, h = self.parent.sprite_renderer.get_surface().get_size()
         sx, sy = self.parent.transform.scale
@@ -79,50 +81,49 @@ class Controller(Component):
             h * sy
         )
 
-        if keys.get("w", False):
-            self.parent.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * dt
+        if self.keys.get("w", False):
+            self.parent.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * self.dt
 
             if self.parent.transform.position.y < 0:
-                self.parent.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * dt
+                self.parent.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * self.dt
 
-        if keys.get("s", False):
-            self.parent.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * dt
+        if self.keys.get("s", False):
+            self.parent.transform.position.y += (scaled_size[1] / 2) * self.parent.speed * self.dt
 
             if self.parent.transform.position.y >= self.engine.screen.get_height() - scaled_size[1]:
-                self.parent.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * dt
+                self.parent.transform.position.y -= (scaled_size[1] / 2) * self.parent.speed * self.dt
 
-        if keys.get("a", False):
-            self.parent.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * dt
+        if self.keys.get("a", False):
+            self.parent.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * self.dt
 
             if self.parent.transform.position.x < 0:
-                self.parent.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * dt
+                self.parent.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * self.dt
         
-        if keys.get("d", False):
-            self.parent.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * dt
+        if self.keys.get("d", False):
+            self.parent.transform.position.x += (scaled_size[0] / 2) * self.parent.speed * self.dt
 
             if self.parent.transform.position.x >= self.engine.screen.get_width() - scaled_size[0]:
-                self.parent.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * dt
+                self.parent.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * self.dt
+
 
         colliding_gameobjects = self.parent.collider.get_colliding_gameobjects()
         for gameobject in colliding_gameobjects:
             if "Enemy" in gameobject.tags:
+                enemy = gameobject
                 if self.parent.is_armored:
-                    gameobject.add
+                    enemy.send_flying()
+                    self.parent.is_armored = False
                 else:
                     self.engine.current_scene.set_gameover()
 
-        space_key = keys.get("space", False)
-        if space_key and self.block_ == False:
-            self.block_ = True
-            self.a()
-        elif space_key == False:
-            self.block_ = False
+        
+        if not self.parent.is_armored:
+            self.timer += self.dt
+            while self.timer > 10:
+                print(1)
+                self.parent.is_armored = True
+                self.timer -= 10
+
+
 
         return super().update()
-    
-    def a(self):
-        self.parent.is_armored = True
-        self.engine.scheduler.schedule_event(1, self.b)
-
-    def b(self):
-        self.parent.is_armored = False
