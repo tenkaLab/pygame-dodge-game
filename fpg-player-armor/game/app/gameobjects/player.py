@@ -57,6 +57,16 @@ class Player(Gameworldobject):
             surface = self.sprite_renderer.get_surface()
             surface.fill(rgb)
             self.sprite_renderer.set_surface(surface)
+
+    def generate_effect(self):
+        self.engine.current_scene.add_gameworldobject(
+            ShadowEffect(
+                surface= self.sprite_renderer.get_surface().copy(),
+                position=self.transform.position,
+                scale=self.transform.scale,
+                layer=self.transform.layer -1 
+            )
+        )
         
 class Controller(Component):
 
@@ -105,6 +115,14 @@ class Controller(Component):
             if self.parent.transform.position.x >= self.engine.screen.get_width() - scaled_size[0]:
                 self.parent.transform.position.x -= (scaled_size[0] / 2) * self.parent.speed * self.dt
 
+        
+        space_key = self.keys.get("space", False)
+        if space_key and self.block_ == False:
+            self.block_ = True
+            self.a()
+        elif space_key == False:
+            self.block_ = False
+
 
         colliding_gameobjects = self.parent.collider.get_colliding_gameobjects()
         for gameobject in colliding_gameobjects:
@@ -117,13 +135,61 @@ class Controller(Component):
                     self.engine.current_scene.set_gameover()
 
         
-        if not self.parent.is_armored:
+        if self.parent.is_armored == False:
             self.timer += self.dt
-            while self.timer > 10:
-                print(1)
+            while self.timer > 5:
                 self.parent.is_armored = True
-                self.timer -= 10
+                self.timer -= 5
+
+        return super().update()
+    
+    def a(self):
+        self.parent.speed = 50
+
+        self.parent.generate_effect()
+        for i in range(5):
+            self.engine.scheduler.schedule_event(0.1*i, self.parent.generate_effect)
+
+        self.engine.scheduler.schedule_event(0.1*i, self.b)
+
+    def b(self):
+        self.parent.speed = self.parent.init_speed
 
 
+class ShadowEffect(Gameworldobject):
+    def __init__(self, surface, position, scale, layer):
+        super().__init__()
+
+        transform = self.get_component("Transform")
+        transform.position = position
+        transform.scale = scale
+        transform.layer = layer
+
+        self.sprite_renderer = SpriteRenderer()
+
+        self.sprite_renderer.set_surface(surface)
+        self.add_component(self.sprite_renderer)
+
+        self.timer = 0
+
+        self.timer_2 = 0
+        self.red = 255
+
+    def start(self):
+        self.dt = self.engine.delta_time
+        return super().start()
+    
+    def update(self):
+
+        self.timer_2 += self.dt
+        while self.timer_2 > 0.1:
+            self.red = max(self.red - 25, 0)
+            surface = self.sprite_renderer.get_surface().copy()
+            surface.fill((self.red,0,0))
+            self.sprite_renderer.set_surface(surface)
+            self.timer_2 -= 0.1
+
+        if self.red < 1:
+            self.destroy()
 
         return super().update()
