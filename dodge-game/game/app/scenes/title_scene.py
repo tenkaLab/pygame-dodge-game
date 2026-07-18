@@ -18,7 +18,7 @@ class TitleScene(Scene):
             position=(0.5,0.7), 
             scale=(0.25,0.25), 
             layer=1, 
-            text="Press the Eenter key to start the game",
+            text="Press the Enter key to start the game",
             size=100,  
             color=(255,255,255)
         )
