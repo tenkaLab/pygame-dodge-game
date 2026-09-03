@@ -3,7 +3,7 @@ name: Progress Additions Notify
 on:
   push:
     branches:
-      - main
+      - develop/v0.3
     paths:
       - "docs/progress/**/*.md"
 
