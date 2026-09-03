@@ -1,5 +1,7 @@
-from game.package.base_objects import Scene
-from game.package.gameobjects.uiobjects import Text
+from game.package import (
+    Scene,
+    Text
+)
 
 class TitleScene(Scene):
 
@@ -23,8 +25,8 @@ class TitleScene(Scene):
             color=(255,255,255)
         )
 
-        self.add_uiobject(title_text)
-        self.add_uiobject(guide_text)
+        self.add_gameobject(title_text)
+        self.add_gameobject(guide_text)
 
         return super().start()
     

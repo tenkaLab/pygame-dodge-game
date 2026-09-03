@@ -6,3 +6,4 @@ class RenderData:
         self.surface: pygame.Surface = make_empty_surface()
         self.position: pygame.Vector2 = pygame.Vector2()
         self.layer: int = 0
+        self.transform_type = None

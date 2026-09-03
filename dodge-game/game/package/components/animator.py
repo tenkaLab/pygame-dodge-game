@@ -1,6 +1,7 @@
 import pygame
 
-from game.package.base_objects.component import Component
+from game.package.core.component import Component
+
 
 class AnimationData:
 

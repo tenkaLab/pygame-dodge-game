@@ -1,22 +1,23 @@
 import json
 
 from game import paths
-from game.package.base_objects import Scene
-from game.package.gameobjects.uiobjects import Text
-
+from game.package import (
+    Scene,
+    Text
+)
 
 class ResultScene(Scene):
 
     def start(self):
 
         title_text = Text((0.5,0.3), 200, (0.5,0.5), 1, str("Result"), (255,255,255))
-        self.add_uiobject(title_text)
+        self.add_gameobject(title_text)
 
         text = Text((0.5,0.6), 100, (0.25,0.25), 1, str("score"), (255,255,255))
-        self.add_uiobject(text)
+        self.add_gameobject(text)
 
         text = Text((0.5,0.75), 100, (0.25,0.25), 1, str("hiscore"), (255,255,255))
-        self.add_uiobject(text)
+        self.add_gameobject(text)
 
         score = self.engine.global_values["score"]
         hiscore = 0
@@ -40,8 +41,8 @@ class ResultScene(Scene):
 
         self.score_numtext = Text((0.5,0.65), 100, (0.25,0.25), 1, str(score), (255,255,255))
         self.hiscore_numtext = Text((0.5,0.8), 100, (0.25,0.25), 1, str(hiscore), (255,255,255))
-        self.add_uiobject(self.score_numtext)  
-        self.add_uiobject(self.hiscore_numtext)  
+        self.add_gameobject(self.score_numtext)  
+        self.add_gameobject(self.hiscore_numtext)  
 
         return super().start()
     

@@ -1,10 +1,11 @@
 import pygame
 
-from game.package.base_objects import Uiobject
-from game.package.components import SpriteRenderer
+from game.package.core.gameobject import Gameobject
+from game.package.components.transform import RectTransform
+from game.package.components.sprite_renderer import SpriteRenderer
 
 
-class Text(Uiobject):
+class Text(Gameobject):
     def __init__(
         self, 
         position: tuple[float, float], 
@@ -19,10 +20,11 @@ class Text(Uiobject):
 
         self.active = init_active
 
-        transform = self.get_component("RectTransform")
+        transform = RectTransform()
         transform.position = position
         transform.scale = scale
         transform.layer = layer
+        self.add_component(transform)
 
         self.add_component(SpriteRenderer())
 
@@ -33,6 +35,7 @@ class Text(Uiobject):
         self.flag = True
 
     def start(self):
+        self.dt = self.engine.delta_time
         self.sprite_renderer = self.get_component("SpriteRenderer")
         self._set_surface()
         return super().start()

@@ -1,47 +1,54 @@
 import pygame
 import asyncio
+import json
+import time
 
-from game import config
-
+from game import paths, definition
 
 class Engine:  
 
     def __init__(self):
         pygame.init()
 
+        with open(paths.GAME_CONFIG, "r") as f:
+            game_config = json.load(f)
+
         self.window = pygame.display.set_mode(
-            config.game["window_size"], 
+            game_config["window_size"], 
             pygame.RESIZABLE
         )
 
-        pygame.display.set_caption(config.game["name"])
-        pygame.display.set_icon(pygame.image.load(config.game["icon_image_path"]))
+        pygame.display.set_caption(game_config["name"])
+        pygame.display.set_icon(pygame.image.load(paths.ROOT / game_config["icon_image_path"]))
         
-        self.running = False
+        self.screen = pygame.Surface(game_config["screen_size"])
 
-        self.screen = pygame.Surface(config.game["screen_size"])
+        self.scenes = definition.scenes
 
-        self.scenes = config.scenes
-
-        init_scene_index = config.game["initial_scene_index"]
+        init_scene_index = definition.initial_scene_index
         self.current_scene = self.scenes[init_scene_index]()
 
-        self.max_tps = config.game["max_tps"]
-        self.max_fps = config.game["max_fps"]
+        self.max_tps = game_config["max_tps"]
+        self.max_fps = game_config["max_fps"]
+
+        self.running = False
 
         self.delta_time = 0
+
+        self.global_values = definition.global_values
 
         self.input_status = InputStatus()
 
         self.scheduler = Scheduler()
 
-        self.debug_settings = config.debug
-
-        self.global_values = config.global_values
+        self.debug_settings = definition.debug
 
     async def start(self):
         self.running = True
         await self._loop()
+
+    def current_time(self):
+        return time.time()
 
     def change_scene(self, index):
         self.current_scene = self.scenes[index]()
@@ -63,7 +70,6 @@ class Engine:
         while self.running:
             dt = clock.tick(self.max_fps) / 1000
             await asyncio.sleep(0)  
-
             accumulator += min(dt, fixed_dt * 5)
 
             fps_timer += dt
@@ -132,14 +138,23 @@ class Engine:
                 self.input_status.mouse_buttons = [False] * 5
                                  
     def _draw(self):
-        self.screen.fill((0, 0, 0))
+        screen = self.screen
+        screen.fill((0, 0, 0))
 
-        scene = self.current_scene
-        if scene.active and scene.is_started:
-            scene.draw()
+        if (
+            self.current_scene.active and 
+            self.current_scene.is_started
+            ):
 
-        scaled = pygame.transform.scale(self.screen, self.window.get_size())
-        self.window.blit(scaled, (0,0))
+            scaled_screen = pygame.transform.scale(
+                self.current_scene.render(screen), 
+                self.window.get_size()
+            )
+
+            self.window.blit(
+                scaled_screen, 
+                (0,0)
+            )
 
         pygame.display.flip()
 

@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import pygame
 
 from game.package.core.render_data import RenderData
-from game.package.base_objects.component import Component
+from game.package.core.component import Component
+
 
 @dataclass
 class Hitbox:
@@ -22,9 +23,11 @@ class Collider(Component):
         self.render_data = RenderData()
 
     def start(self):
-        self.worldobjects = self.engine.current_scene.world
+        self.gameobjects = self.engine.current_scene.gameobjects
 
         self.transform = self.parent.get_component("Transform")
+
+        self.render_data.transform_type = self.transform.__class__.__name__
 
         self.last_pos = self.transform.position
 
@@ -49,6 +52,9 @@ class Collider(Component):
         self.hitboxes.append(Hitbox(offset_position, size, color))
 
     def is_colliding(self):
+        if self.active == False:
+            return
+
         for my_hitbox in self.hitboxes:
            
            my_rect = self._create_rect(self.transform, my_hitbox)
@@ -62,6 +68,9 @@ class Collider(Component):
                 if target_collider is None or target_transform is None:
                    continue
 
+                if target_collider.active == False:
+                    continue
+
                 for target_hitbox in target_collider.hitboxes:
 
                     target_rect = self._create_rect(target_transform, target_hitbox)
@@ -70,6 +79,38 @@ class Collider(Component):
                         return True
                 
         return False
+    
+    def get_colliding_gameobjects(self):
+        colliding_objects = []
+
+        if self.active == False:
+            return colliding_objects
+
+        for my_hitbox in self.hitboxes:
+           
+            my_rect = self._create_rect(self.transform, my_hitbox)
+           
+            for target_gameobject in self.gameobjects:
+                if target_gameobject is self.parent:
+                    continue
+
+                target_collider = target_gameobject.get_component("Collider")
+                target_transform = target_gameobject.get_component("Transform")
+                if target_collider is None or target_transform is None:
+                   continue
+
+                if target_collider.active == False:
+                    continue
+
+                for target_hitbox in target_collider.hitboxes:
+
+                    target_rect = self._create_rect(target_transform, target_hitbox)
+
+                    if my_rect.colliderect(target_rect):
+                        colliding_objects.append(target_gameobject)
+                        break
+                
+        return colliding_objects
 
     def _resolve_collision(self):
         if self.is_colliding():
@@ -142,6 +183,6 @@ class Collider(Component):
             combined_surface.blit(hitbox_surface, (hitbox[0] - x, hitbox[1] - y))
 
         self.render_data.surface = combined_surface
-        self.render_data.position = (position.x + x, position.y + y)
+        self.render_data.position.xy = (position.x + x, position.y + y)
         self.render_data.layer = self.transform.layer +1
 

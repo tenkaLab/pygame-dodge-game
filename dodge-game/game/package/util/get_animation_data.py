@@ -1,5 +1,6 @@
 import json, pygame
 
+
 def get_animation_data(aniamtions_data_json_path, animation_name) -> list[dict[str,list]]:
 
     with open(aniamtions_data_json_path, "r") as f:

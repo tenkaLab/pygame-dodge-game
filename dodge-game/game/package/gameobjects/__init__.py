@@ -1,2 +1,2 @@
-from .worldobjects.camera import Camera
-from .worldobjects.square import Square
+from .world.camera import Camera
+from .world.square import Square

@@ -1,10 +1,12 @@
 import pygame
 
-from game.package.base_objects.worldobject import Worldobject
+from game.package.core.gameobject import Gameobject
+from game.package.components.transform import Transform
 from game.package.components.sprite_renderer import SpriteRenderer
 from game.package.components.collider import Collider
 
-class Square(Worldobject):
+
+class Square(Gameobject):
     def __init__(
             self, 
             position: tuple[float,float], 
@@ -15,17 +17,18 @@ class Square(Worldobject):
         ):
         super().__init__()
 
-        transfrom = self.get_component("Transform")
+        transfrom = Transform()
         transfrom.position = position
         transfrom.scale = scale
         transfrom.layer = layer
+        self.add_component(transfrom)
 
-        sprite = SpriteRenderer()
-        surface = pygame.Surface((1,1))
+        surface = pygame.Surface((8,8))
         surface.fill(color)
+        sprite = SpriteRenderer()
         sprite.set_surface(surface)
         self.add_component(sprite)
 
         collider = Collider()
-        collider.add_hitbox((0,0),(1,1), (hitbox_color))
+        collider.add_hitbox((0,0),(8,8), (hitbox_color))
         self.add_component(collider)

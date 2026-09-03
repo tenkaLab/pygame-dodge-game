@@ -3,7 +3,7 @@
         "init_move_speed": 14
     },
     "enemy": {
-        "init_move_speed": 5,
+        "init_move_speed": 30,
         "init_spawn_speed": 0.2
     },
     "difficulty": {
